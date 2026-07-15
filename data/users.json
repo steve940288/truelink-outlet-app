@@ -1,0 +1,52 @@
+[
+  {
+    "username": "redeat",
+    "displayName": "Redeat",
+    "passwordHash": "$2b$10$cq1cYSHNcP3Yu9mOqjVy.u.BTTZ.llowsKPMrLKSOceQ8.d4HjtL6"
+  },
+  {
+    "username": "abubeker",
+    "displayName": "Abubeker",
+    "passwordHash": "$2b$10$SmCoAVTlAqgdGNIF9/z0g.NgOlxWZLROgbASINRiSmDFJZ95EF.Zq"
+  },
+  {
+    "username": "estephanos",
+    "displayName": "Estephanos",
+    "passwordHash": "$2b$10$sZB65rJr8utxj7sRs4jHb.ad6ekszH87eJizwOTcqebImZPcI1RiW"
+  },
+  {
+    "username": "user4",
+    "displayName": "User 4",
+    "passwordHash": "$2b$10$Gx2ZssZhRwx1tO5nyKIaq.gYAA20yU/ubbXplxv54Zs.GezQ/CBsK"
+  },
+  {
+    "username": "user5",
+    "displayName": "User 5",
+    "passwordHash": "$2b$10$9SNlo3CjoMVr3PsDJJgu7OEOKYYR8.f1buJOVyrmEsITqK5fUxqrC"
+  },
+  {
+    "username": "user6",
+    "displayName": "User 6",
+    "passwordHash": "$2b$10$iQhNpCQTIs14oZf1NVr86O4VTOHLke5TxOHWGJdZ/nv9N5U5udHAu"
+  },
+  {
+    "username": "user7",
+    "displayName": "User 7",
+    "passwordHash": "$2b$10$w08qh2LMa90w8gFdUdwMruHvYVXQrkkkF1hN6QdCoiGYg5lf0EN0W"
+  },
+  {
+    "username": "user8",
+    "displayName": "User 8",
+    "passwordHash": "$2b$10$1vXHIioo88.jpaBiLbeNrOJkaF3gl6YjodGQtsKvleK40z8Wf1hMm"
+  },
+  {
+    "username": "user9",
+    "displayName": "User 9",
+    "passwordHash": "$2b$10$NCmOe9k3V3dKr.eJSPpoRewWFJDszaj2.WBbFkLhrdvcEOa3v8F6i"
+  },
+  {
+    "username": "user10",
+    "displayName": "User 10",
+    "passwordHash": "$2b$10$SpR.8Y2Bm4sWakuCdaxv6u.ZBtpqV0M6laKMJMV1P6rc6QVta/p/S"
+  }
+]
