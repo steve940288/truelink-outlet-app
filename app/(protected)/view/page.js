@@ -86,7 +86,7 @@ export default function ViewPage() {
             )}
             {!loading &&
               outlets.map((o) => (
-                <div className="outlet-row" key={o.id}>
+                <div className="outlet-row" key={o.outletId}>
                   <div style={{ fontWeight: 700 }}>
                     {o.fullName}
                     <span className="pill">{o.outletId}</span>

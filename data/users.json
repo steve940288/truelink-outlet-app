@@ -1,52 +1,62 @@
 [
   {
+    "username": "estephanos",
+    "displayName": "Estephanos",
+    "role": "admin",
+    "passwordHash": "$2b$10$Cd/3rqb0rr.QRvxV9tmBtexP9WEVZx7nnL0oMKDy8lnFDdByseCpW"
+  },
+  {
     "username": "redeat",
     "displayName": "Redeat",
-    "passwordHash": "$2b$10$cq1cYSHNcP3Yu9mOqjVy.u.BTTZ.llowsKPMrLKSOceQ8.d4HjtL6"
+    "role": "dashboard",
+    "passwordHash": "$2b$10$wRfCBJ7jjs5rfzAoJSrmTOCC03EPblCbYAqBQeB0vgiUO9iV9FHyC"
   },
   {
     "username": "abubeker",
     "displayName": "Abubeker",
-    "passwordHash": "$2b$10$SmCoAVTlAqgdGNIF9/z0g.NgOlxWZLROgbASINRiSmDFJZ95EF.Zq"
-  },
-  {
-    "username": "estephanos",
-    "displayName": "Estephanos",
-    "passwordHash": "$2b$10$sZB65rJr8utxj7sRs4jHb.ad6ekszH87eJizwOTcqebImZPcI1RiW"
+    "role": "dashboard",
+    "passwordHash": "$2b$10$X.mBtt9/UooPvDUXIwlGhOdMiMC9M39lc7fqqFKlo7eb4d6mz084C"
   },
   {
     "username": "user4",
     "displayName": "User 4",
-    "passwordHash": "$2b$10$Gx2ZssZhRwx1tO5nyKIaq.gYAA20yU/ubbXplxv54Zs.GezQ/CBsK"
+    "role": "staff",
+    "passwordHash": "$2b$10$HZRjxNyMyBJnfgxqdD8q0OXmbtzGpdxdAt1f0D7OvEghldB2oDLF2"
   },
   {
     "username": "user5",
     "displayName": "User 5",
-    "passwordHash": "$2b$10$9SNlo3CjoMVr3PsDJJgu7OEOKYYR8.f1buJOVyrmEsITqK5fUxqrC"
+    "role": "staff",
+    "passwordHash": "$2b$10$hkqwuHyrQJ1nbXNiuLHgVO4OXwCYASf33XQTMaV9IDIG7A/zrnKqW"
   },
   {
     "username": "user6",
     "displayName": "User 6",
-    "passwordHash": "$2b$10$iQhNpCQTIs14oZf1NVr86O4VTOHLke5TxOHWGJdZ/nv9N5U5udHAu"
+    "role": "staff",
+    "passwordHash": "$2b$10$zvpVtRuedmDEXGXu8GqiMOPw.KWTHQ2TCHGIYa1UavxiL/UE9s5mK"
   },
   {
     "username": "user7",
     "displayName": "User 7",
-    "passwordHash": "$2b$10$w08qh2LMa90w8gFdUdwMruHvYVXQrkkkF1hN6QdCoiGYg5lf0EN0W"
+    "role": "staff",
+    "passwordHash": "$2b$10$T3WfOcfrtfmOzmYghoJPUeJBj6SV2k/GscguAAYv3zvH5sQY5zCgu"
   },
   {
     "username": "user8",
     "displayName": "User 8",
-    "passwordHash": "$2b$10$1vXHIioo88.jpaBiLbeNrOJkaF3gl6YjodGQtsKvleK40z8Wf1hMm"
+    "role": "staff",
+    "passwordHash": "$2b$10$s4vE88Gf0pYr0ySTvAXHIeqxiNlNZDqnScTj1eWUWTrvvOLtKsXPK"
   },
   {
     "username": "user9",
     "displayName": "User 9",
-    "passwordHash": "$2b$10$NCmOe9k3V3dKr.eJSPpoRewWFJDszaj2.WBbFkLhrdvcEOa3v8F6i"
+    "role": "staff",
+    "passwordHash": "$2b$10$/wM3U.7b7q4xNX7mqa.1sObX2pJdjDwQy.KyLteaDbUpLDiqxr6pC"
   },
   {
     "username": "user10",
     "displayName": "User 10",
-    "passwordHash": "$2b$10$SpR.8Y2Bm4sWakuCdaxv6u.ZBtpqV0M6laKMJMV1P6rc6QVta/p/S"
+    "role": "staff",
+    "passwordHash": "$2b$10$yDrpQ.D7FebjHxMmGz1jVe6TNvFZDcWGw6TT0OQXkG3eByoCcHw66"
   }
 ]

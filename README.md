@@ -1,26 +1,39 @@
 # True Link PLC — Outlet Registration App
 
-A mobile-friendly Next.js web app for scanning outlet stickers and registering
-outlets to a database, or looking up outlets that are already registered.
-Deployed at **truelink.et/registeroutlets**.
+A mobile-friendly Next.js web app for scanning outlet stickers, registering
+outlets, and looking up outlets that are already registered.
+
+## Architecture: two parts, two hosts
+
+This system is split across two hosts on purpose:
+
+- **This app** (Next.js) runs on **Vercel** (free tier) — no build/resource
+  limits to fight, Vercel handles that natively.
+- **The actual data** (registrations + photos) lives on **your cPanel
+  hosting**, via a small PHP + MySQL API (see the separate `cpanel-api`
+  folder). Vercel's servers don't have persistent storage, so this app talks
+  to that API over HTTPS instead of writing to local files.
+
+You need to set up **both halves** for this to work. Set up `cpanel-api`
+first (see its own README), then come back here for the Vercel side.
 
 ## Login
 
 Every page requires signing in first, so every registration is tied to a
 name. Current accounts (change these — see "Managing users" below):
 
-| User | Username | Password |
-|---|---|---|
-| Redeat | `redeat` | `riwBnxcw9K` |
-| Abubeker | `abubeker` | `fbdNQSKhfF` |
-| Estephanos | `estephanos` | `kYCPvgi8hD` |
-| User 4 | `user4` | `NK3xsPWAMb` |
-| User 5 | `user5` | `bjiDWgRHnu` |
-| User 6 | `user6` | `CZmvHARvE4` |
-| User 7 | `user7` | `qTCbJWJsFq` |
-| User 8 | `user8` | `STkBXSXUA2` |
-| User 9 | `user9` | `YitaJvEbcN` |
-| User 10 | `user10` | `aikTxmY4y4` |
+| User | Username | Password | Role |
+|---|---|---|---|
+| Estephanos | `estephanos` | `kYCPvgi8hD` | **Super Admin** — dashboard + edit + CSV export |
+| Redeat | `redeat` | `riwBnxcw9K` | Dashboard — can view + edit outlets |
+| Abubeker | `abubeker` | `fbdNQSKhfF` | Dashboard — can view + edit outlets |
+| User 4 | `user4` | `NK3xsPWAMb` | Staff — registration only, no dashboard |
+| User 5 | `user5` | `bjiDWgRHnu` | Staff |
+| User 6 | `user6` | `CZmvHARvE4` | Staff |
+| User 7 | `user7` | `qTCbJWJsFq` | Staff |
+| User 8 | `user8` | `STkBXSXUA2` | Staff |
+| User 9 | `user9` | `YitaJvEbcN` | Staff |
+| User 10 | `user10` | `aikTxmY4y4` | Staff |
 
 Every outlet registration records which username created it, and the search
 list / scan-to-view screens show "Registered by [name]".
@@ -29,18 +42,36 @@ list / scan-to-view screens show "Registered by [name]".
 other password list. Passwords are stored as bcrypt hashes in
 `data/users.json`, never in plain text.
 
+### Roles
+
+- **`staff`** — can register outlets and view the registered list. No
+  dashboard access.
+- **`dashboard`** — everything staff can do, plus: **Dashboard** page to
+  search/browse all outlets, edit any editable field, and view each
+  outlet's change history (who changed what, and when).
+- **`admin`** (super admin — currently just Estephanos) — everything
+  `dashboard` can do, plus a **CSV export** of all outlet data.
+
+Every edit is recorded — the dashboard's History view on each outlet shows
+exactly which field changed, from what value to what value, who made the
+change, and when. This is enforced both in the UI and on the server (so it
+can't be bypassed by calling the API directly).
+
 ### Managing users
 
-To change passwords, rename users, or add more:
+To change passwords, rename users, change roles, or add more:
 
 1. Edit `scripts/generate-users.js` — update the `USERS` array (username,
-   displayName, password).
+   displayName, password, **role**: `"staff"`, `"dashboard"`, or `"admin"`).
 2. Run:
    ```
    node scripts/generate-users.js
    ```
    This overwrites `data/users.json` with fresh bcrypt hashes.
-3. Restart the app for the change to take effect.
+3. **Commit this file and redeploy to Vercel** (see note below — Vercel
+   deployments are a snapshot of your code, so changes only take effect on
+   the next deploy, unlike the old cPanel setup where you could edit files
+   directly on the server).
 
 ## What it does
 
@@ -58,60 +89,9 @@ To change passwords, rename users, or add more:
   - **Search List** — search all registered outlets by name, phone, or ID
   - **Scan to View** — scan a sticker's QR to instantly pull up that outlet's
     registration (or see that it isn't registered yet)
-
-## Deploying on cPanel (truelink.et/registeroutlets)
-
-This app is already configured to run at the `/registeroutlets` path
-(see `basePath` in `next.config.js`) and includes `server.js`, the entry
-point cPanel's Node.js hosting feature needs.
-
-**Requirements:** your cPanel hosting must support "Setup Node.js App"
-(Node.js 18+). Check with your host if you don't see this option in cPanel.
-
-### Steps
-
-1. **Upload the project files** to your hosting account — everywhere
-   *except* `node_modules` and `.next` (those get generated on the server).
-   Use File Manager or FTP/SFTP. A sensible location is a folder outside
-   `public_html`, e.g. `~/registeroutlets-app`.
-
-2. **In cPanel, open "Setup Node.js App" → Create Application:**
-   - Node.js version: latest available 18.x or 20.x
-   - Application mode: `Production`
-   - Application root: the folder you uploaded to (e.g. `registeroutlets-app`)
-   - Application URL: choose `truelink.et`, and set the path to `registeroutlets`
-   - Application startup file: `server.js`
-   - Save/Create.
-
-3. cPanel will show a command to **"Enter to the virtual environment"** —
-   something like:
-   ```
-   source /home/<youruser>/nodevenv/registeroutlets-app/18/bin/activate && cd /home/<youruser>/registeroutlets-app
-   ```
-   Run that via cPanel's Terminal (or SSH). Then, inside that environment:
-   ```
-   npm install
-   node scripts/generate-users.js
-   npm run build
-   ```
-
-4. Copy your sticker mapping file into place (see note below):
-   ```
-   data/id_token_mapping.csv
-   ```
-
-5. Back in the "Setup Node.js App" page, click **Restart**.
-
-6. Visit `https://truelink.et/registeroutlets` — you should see the login page.
-
-### Updating the app later
-
-Whenever you change the code or add more outlets to the mapping file:
-1. Upload the changed files.
-2. Re-enter the virtual environment (step 3 above).
-3. Run `npm run build` again if you changed any code (not needed for just
-   updating `data/id_token_mapping.csv`).
-4. Click **Restart** in "Setup Node.js App".
+- **Dashboard** (dashboard/admin roles only) — search/browse all outlets,
+  edit any field, view each outlet's edit history, and (super admin only)
+  export everything as CSV
 
 ## Important: how the two QR codes relate
 
@@ -124,59 +104,81 @@ Your stickers (from `generate_stickers.py`) have two QR codes:
   `id_token_mapping.csv` file the sticker script generates
 
 This app works with **either** QR, but to resolve the right-QR code back to
-a real outlet ID, it needs that mapping file. **Copy `id_token_mapping.csv`
-(from your `Outputs` folder when you ran `generate_stickers.py`) into this
-app's `data/` folder.** Whenever you print a new batch of stickers, copy the
-latest mapping file over again.
+a real outlet ID, it needs that mapping file bundled into the deployment:
+
+```
+data/id_token_mapping.csv
+```
+
+**Important Vercel-specific detail:** unlike the old cPanel setup, you can't
+just upload this file to a running server — it needs to be part of your
+project's source code **before you deploy**, since Vercel deployments are
+an immutable snapshot. Whenever you print a new batch of stickers, update
+this file and redeploy.
 
 If that file isn't present, scanning the left QR (URL) still works fine on
 its own — only right-QR scans need the mapping file.
 
 **Lost the mapping file?** As long as you still have `secret.key` and the
 original `ids.csv` used for that print run, just re-run
-`python3 generate_stickers.py ids.csv` — the code generation is
-deterministic (same key + same ID always produces the same code), so it
-will reproduce an identical mapping file. You don't need to reprint
-anything.
+`python3 generate_stickers.py ids.csv` on the machine where those live — the
+code generation is deterministic (same key + same ID always produces the
+same code), so it will reproduce an identical mapping file.
 
 ## Setup
 
-1. Install [Node.js](https://nodejs.org) 18 or later if you don't have it.
-2. In this folder, install dependencies:
+1. Install dependencies:
    ```
    npm install
    ```
-3. Copy your sticker mapping file into place:
+2. Generate the login accounts:
    ```
-   data/id_token_mapping.csv
+   node scripts/generate-users.js
    ```
-4. Run the app:
-   ```
-   npm run dev
-   ```
-5. Open the printed URL (usually `http://localhost:3000`).
+3. Copy your sticker mapping file into `data/id_token_mapping.csv` (see above).
+4. Set up the PHP API first — see `cpanel-api/README.md`. You'll need the
+   API URL and API key from that setup for the next step.
 
-## Important: camera + location require HTTPS (or localhost)
+## Environment variables (set these in Vercel, not in a local file)
 
-Browsers only allow camera and geolocation access on secure origins. This
-means:
+In your Vercel project → **Settings → Environment Variables**, add:
 
-- Testing on the same computer via `http://localhost:3000` works fine.
-- To test on a **phone** on your local network, `http://<your-computer-ip>:3000`
-  will **not** be allowed to access the camera (not secure). Options:
-  - Deploy it to a real HTTPS domain (e.g. a subdomain of truelink.et)
-  - Use a tunneling tool like [ngrok](https://ngrok.com) during testing to
-    get a temporary HTTPS URL pointing at your local dev server
+| Variable | Value |
+|---|---|
+| `PHP_API_URL` | e.g. `https://truelink.et/registeroutlets-api/outlets_api.php` |
+| `PHP_API_KEY` | the same `API_KEY` value you set in `cpanel-api/config.php` |
+| `SESSION_SECRET` | a long random string — generate with `openssl rand -hex 32` |
 
-## Data storage
+**Never commit these to your repository** — they belong only in Vercel's
+environment variable settings (and, if testing locally, in a `.env.local`
+file that stays out of git).
 
-- Outlet registrations are stored in `data/outlets.json` — a simple JSON
-  file, not a full database. This is intentional (no native database driver
-  to install, works anywhere Node.js runs) and is fine for a small internal
-  tool used by a handful of staff at a time.
-- Uploaded outlet photos are saved to `public/uploads/`.
-- **Back up `data/outlets.json` and `public/uploads/` regularly** — there's
-  no separate database backing this up for you.
+## Deploying to Vercel
+
+1. Push this project to a GitHub repository (Vercel deploys from Git).
+2. Go to [vercel.com](https://vercel.com), sign in, click **Add New →
+   Project**, and import that repository.
+3. Vercel will auto-detect Next.js — no special build settings needed.
+4. Add the three environment variables above before deploying (or add them
+   and redeploy if you already deployed once).
+5. Deploy. You'll get a URL like `https://truelink-outlet-app.vercel.app`.
+
+### Updating the app later
+
+```
+git add .
+git commit -m "your change"
+git push
+```
+Vercel redeploys automatically on every push to your main branch.
+
+## Testing locally before deploying
+
+Create a `.env.local` file (never commit this) with the same three
+variables pointing at your real PHP API (or a local test setup), then:
+```
+npm run dev
+```
 
 ## Notes on the location step
 

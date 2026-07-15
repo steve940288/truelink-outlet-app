@@ -4,25 +4,30 @@ const bcrypt = require("bcryptjs");
 const fs = require("fs");
 const path = require("path");
 
-// username : { displayName, password }
+// Roles:
+//   "admin"     - dashboard access + can edit outlets + can export CSV
+//   "dashboard" - dashboard access + can edit outlets (no export)
+//   "staff"     - registration/view only, no dashboard access
+//
 // CHANGE THESE PASSWORDS before real use if you want different ones than
 // the ones already shared with you - this file is just for generating the hashes.
 const USERS = [
-  { username: "redeat", displayName: "Redeat", password: "riwBnxcw9K" },
-  { username: "abubeker", displayName: "Abubeker", password: "fbdNQSKhfF" },
-  { username: "estephanos", displayName: "Estephanos", password: "kYCPvgi8hD" },
-  { username: "user4", displayName: "User 4", password: "NK3xsPWAMb" },
-  { username: "user5", displayName: "User 5", password: "bjiDWgRHnu" },
-  { username: "user6", displayName: "User 6", password: "CZmvHARvE4" },
-  { username: "user7", displayName: "User 7", password: "qTCbJWJsFq" },
-  { username: "user8", displayName: "User 8", password: "STkBXSXUA2" },
-  { username: "user9", displayName: "User 9", password: "YitaJvEbcN" },
-  { username: "user10", displayName: "User 10", password: "aikTxmY4y4" },
+  { username: "estephanos", displayName: "Estephanos", password: "kYCPvgi8hD", role: "admin" },
+  { username: "redeat", displayName: "Redeat", password: "riwBnxcw9K", role: "dashboard" },
+  { username: "abubeker", displayName: "Abubeker", password: "fbdNQSKhfF", role: "dashboard" },
+  { username: "user4", displayName: "User 4", password: "NK3xsPWAMb", role: "staff" },
+  { username: "user5", displayName: "User 5", password: "bjiDWgRHnu", role: "staff" },
+  { username: "user6", displayName: "User 6", password: "CZmvHARvE4", role: "staff" },
+  { username: "user7", displayName: "User 7", password: "qTCbJWJsFq", role: "staff" },
+  { username: "user8", displayName: "User 8", password: "STkBXSXUA2", role: "staff" },
+  { username: "user9", displayName: "User 9", password: "YitaJvEbcN", role: "staff" },
+  { username: "user10", displayName: "User 10", password: "aikTxmY4y4", role: "staff" },
 ];
 
 const users = USERS.map((u) => ({
   username: u.username,
   displayName: u.displayName,
+  role: u.role,
   passwordHash: bcrypt.hashSync(u.password, 10),
 }));
 

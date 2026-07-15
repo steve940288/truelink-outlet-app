@@ -12,5 +12,6 @@ export async function GET(request) {
     loggedIn: true,
     username: session.username,
     displayName: user?.displayName || session.username,
+    role: user?.role || "staff",
   });
 }

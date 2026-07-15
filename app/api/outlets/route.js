@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-import { v4 as uuidv4 } from "uuid";
-import { addOutlet, findOutletById, searchOutlets } from "@/lib/db";
+import { createOutlet, findOutletById, searchOutlets } from "@/lib/db";
 import { resolveScannedText } from "@/lib/scan";
 import { verifySessionToken, SESSION_COOKIE_NAME } from "@/lib/auth";
 
@@ -13,12 +10,15 @@ export async function GET(request) {
     return NextResponse.json({ error: "Not signed in." }, { status: 401 });
   }
 
-  const { searchParams } = new URL(request.url);
-  const q = searchParams.get("q") || "";
-  const outlets = searchOutlets(q).sort(
-    (a, b) => new Date(b.registeredAt) - new Date(a.registeredAt)
-  );
-  return NextResponse.json({ outlets });
+  try {
+    const { searchParams } = new URL(request.url);
+    const q = searchParams.get("q") || "";
+    const outlets = await searchOutlets(q);
+    return NextResponse.json({ outlets });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Could not reach the outlet database." }, { status: 502 });
+  }
 }
 
 export async function POST(request) {
@@ -55,7 +55,7 @@ export async function POST(request) {
     const resolved = resolveScannedText(scannedText);
     const outletId = resolved.id;
 
-    const existing = findOutletById(outletId);
+    const existing = await findOutletById(outletId);
     if (existing) {
       return NextResponse.json(
         { error: `This outlet (${outletId}) is already registered.`, existing },
@@ -63,37 +63,34 @@ export async function POST(request) {
       );
     }
 
-    let photoPath = null;
-    if (photo && typeof photo.arrayBuffer === "function" && photo.size > 0) {
-      const uploadsDir = path.join(process.cwd(), "public", "uploads");
-      fs.mkdirSync(uploadsDir, { recursive: true });
-      const ext = (photo.name && photo.name.split(".").pop()) || "jpg";
-      const filename = `${uuidv4()}.${ext}`;
-      const buffer = Buffer.from(await photo.arrayBuffer());
-      fs.writeFileSync(path.join(uploadsDir, filename), buffer);
-      photoPath = `/uploads/${filename}`;
+    const photoFile = photo && typeof photo.arrayBuffer === "function" && photo.size > 0 ? photo : null;
+
+    const { ok, status, data } = await createOutlet(
+      {
+        outletId,
+        scanSource: resolved.source,
+        scanMatched: resolved.matched ? "1" : "0",
+        fullName,
+        phone,
+        phone2,
+        tin,
+        avgDropSize: avgDropSizeRaw,
+        visitsPerMonth: visitsPerMonthRaw,
+        lat: lat || "",
+        lng: lng || "",
+        registeredBy: session.username,
+      },
+      photoFile
+    );
+
+    if (!ok) {
+      return NextResponse.json(
+        { error: data.error || "Server error while saving the outlet." },
+        { status }
+      );
     }
 
-    const outlet = {
-      id: uuidv4(),
-      outletId,
-      scanSource: resolved.source, // "url" or "code"
-      scanMatched: resolved.matched, // false if a right-QR code wasn't found in the mapping file
-      fullName,
-      phone,
-      phone2: phone2 || null,
-      tin: tin || null,
-      avgDropSize: avgDropSizeRaw ? parseFloat(avgDropSizeRaw) : null,
-      visitsPerMonth: visitsPerMonthRaw ? parseInt(visitsPerMonthRaw, 10) : null,
-      lat: lat ? parseFloat(lat) : null,
-      lng: lng ? parseFloat(lng) : null,
-      photoPath,
-      registeredBy: session.username,
-      registeredAt: new Date().toISOString(),
-    };
-
-    addOutlet(outlet);
-    return NextResponse.json({ outlet }, { status: 201 });
+    return NextResponse.json({ outlet: data.outlet }, { status: 201 });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Server error while saving the outlet." }, { status: 500 });
